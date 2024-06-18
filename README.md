@@ -48,8 +48,6 @@ It uses the following:
   - For higher-quality embeddings, switch to `"nomic-ai/nomic-embed-text-v1"` in `app/worker.ts`.
 - [Firecrawl](https://www.firecrawl.dev/) to scrape the webpages and deliver them in markdown format.
 
-While the goal is to run as much of the app as possible directly in the browser, but you can swap in [Ollama embeddings](https://js.langchain.com/docs/modules/data_connection/text_embedding/integrations/ollama) in lieu of Transformers.js as well.
-
 ## 🔱 Forking
 
 To run/deploy this yourself, simply fork this repo and install the required dependencies with `yarn`.
