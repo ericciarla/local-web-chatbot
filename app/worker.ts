@@ -6,7 +6,6 @@ import { createRetrievalChain } from "langchain/chains/retrieval";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
 
-import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { FireCrawlLoader } from "@langchain/community/document_loaders/web/firecrawl";
 
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/hf_transformers";
@@ -55,24 +54,7 @@ const WEBLLM_RESPONSE_SYSTEM_TEMPLATE = `You are an experienced researcher, expe
 Generate a concise answer for a given question based solely on the provided search results. You must only use information from the provided search results. Use an unbiased and journalistic tone. Combine search results together into a coherent answer. Do not repeat text, stay focused, and stop generating when you have answered the question.
 If there is nothing in the context relevant to the question at hand, just say "Hmm, I'm not sure." Don't try to make up an answer.`;
 
-const embedPDF = async (pdfBlob: Blob) => {
-  const pdfLoader = new WebPDFLoader(pdfBlob, { parsedItemSeparator: " " });
-  const docs = await pdfLoader.load();
 
-  const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 500,
-    chunkOverlap: 50,
-  });
-
-  const splitDocs = await splitter.splitDocuments(docs);
-
-  self.postMessage({
-    type: "log",
-    data: splitDocs,
-  });
-
-  await vectorstore.addDocuments(splitDocs);
-};
 
 const _formatChatHistoryAsMessages = async (
   chatHistory: ChatWindowMessage[],
@@ -252,24 +234,6 @@ self.addEventListener("message", async (event: { data: any }) => {
       self.postMessage({
         type: "log",
         data: `Embedded website: ${event.data.url} complete`,
-      });
-    } catch (e: any) {
-      self.postMessage({
-        type: "error",
-        error: e.message,
-      });
-      throw e;
-    }
-  } else if (event.data.pdf){
-    try {
-      self.postMessage({
-        type: "log",
-        data: `Embedding PDF now`,
-      });
-      await embedPDF(event.data.pdf);
-      self.postMessage({
-        type: "log",
-        data: `Embedded PDF complete`,
       });
     } catch (e: any) {
       self.postMessage({
