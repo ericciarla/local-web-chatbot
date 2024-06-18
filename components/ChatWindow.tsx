@@ -18,12 +18,9 @@ export function ChatWindow(props: { placeholder?: string }) {
   const [selectedURL, setSelectedURL] = useState<string | null>(null);
   const [firecrawlApiKey, setFirecrawlApiKey] = useState("");
   const [readyToChat, setReadyToChat] = useState(false);
-  const [browserOnly, setBrowserOnly] = useState(false);
   const initProgressToastId = useRef<Id | null>(null);
-  const titleText = browserOnly
-    ? "In-Browser Chat With Websites"
-    : "Local Chat With Websites";
-  const emoji = browserOnly ? "🏠" : "🦙";
+  const titleText = "Local Chat With Websites";
+  const emoji = "🦙";
 
   const worker = useRef<Worker | null>(null);
 
@@ -37,13 +34,6 @@ export function ChatWindow(props: { placeholder?: string }) {
           controller.close();
           return;
         }
-        // See https://github.com/mlc-ai/web-llm/blob/main/src/config.ts for a list of available models
-        const webLLMConfig = {
-          model: "Phi-3-mini-4k-instruct-q4f16_1-MLC",
-          chatOptions: {
-            temperature: 0.1,
-          },
-        };
         const ollamaConfig = {
           baseUrl: "http://localhost:11435",
           temperature: 0.3,
@@ -51,8 +41,8 @@ export function ChatWindow(props: { placeholder?: string }) {
         };
         const payload: Record<string, any> = {
           messages,
-          modelProvider: browserOnly ? "webllm" : "ollama",
-          modelConfig: browserOnly ? webLLMConfig : ollamaConfig,
+          modelProvider: "ollama",
+          modelConfig: ollamaConfig,
         };
         if (
           process.env.NEXT_PUBLIC_LANGCHAIN_TRACING_V2 === "true" &&
@@ -223,20 +213,8 @@ export function ChatWindow(props: { placeholder?: string }) {
     <>
       <div className="p-4 md:p-8 rounded bg-[#25252d] w-full max-h-[85%] overflow-hidden flex flex-col">
         <h1 className="text-3xl md:text-4xl mb-2 ml-auto mr-auto">
-          {emoji} {browserOnly ? "In-Browser" : "Local"} Chat With Websites{" "}
-          {emoji}
+          {emoji} Local Chat With Websites {emoji}
         </h1>
-        <div className="my-4 rounded border p-2 ml-auto mr-auto">
-          <label htmlFor="one">
-            <input
-              id="one"
-              type="checkbox"
-              checked={browserOnly}
-              onChange={(e) => setBrowserOnly(e.target.checked)}
-            />
-            Browser-only mode
-          </label>
-        </div>
         <ul>
           <li className="text-l">
             🏡
@@ -247,116 +225,59 @@ export function ChatWindow(props: { placeholder?: string }) {
               This is a direct fork of{" "}
               <a href="https://github.com/jacoblee93/fully-local-pdf-chatbot">
                 Jacob Lee&apos;s fully local PDF chatbot
-              </a>
-              . It is a simple chatbot that allows you to ask questions about a
+              </a>{" "}
+              replacing the chat with PDF functionality with website support. It
+              is a simple chatbot that allows you to ask questions about a
               website by embedding it and running queries against the vector
               store using a local LLM and embeddings.
-              <br></br>
-              <br></br>
-              This is a work in progress and is not yet ready for production
-              use.
             </span>
           </li>
-          <li className="hidden text-l md:block">
-            🌐
-            <span className="ml-2">
-              The vector store (
-              <a target="_blank" href="https://github.com/tantaraio/voy">
-                Voy
-              </a>
-              ) and embeddings (
-              <a
-                target="_blank"
-                href="https://huggingface.co/docs/transformers.js/index"
-              >
-                Transformers.js
-              </a>
-              ) are served via Vercel Edge function and run fully in the browser
-              with no setup required.
-            </span>
-          </li>
-          {browserOnly ? (
-            <li>
-              ⚙️
-              <span className="ml-2">
-                The default LLM is Phi-3 run using{" "}
-                <a href="https://webllm.mlc.ai/">WebLLM</a>. The first time you
-                start a chat, the app will automatically download the weights
-                and cache them in your browser.
-              </span>
-            </li>
-          ) : (
-            <li>
-              ⚙️
-              <span className="ml-2">
-                The default LLM is Mistral-7B run locally by Ollama. You&apos;ll
-                need to install{" "}
-                <a target="_blank" href="https://ollama.ai">
-                  the Ollama desktop app
-                </a>{" "}
-                and run the following commands to give this site access to the
-                locally running model:
-                <br />
-                <pre className="inline-flex px-2 py-1 my-2 rounded">
-                  $ OLLAMA_ORIGINS=https://webml-demo.vercel.app
-                  OLLAMA_HOST=127.0.0.1:11435 ollama serve
-                </pre>
-                <br />
-                Then, in another window:
-                <br />
-                <pre className="inline-flex px-2 py-1 my-2 rounded">
-                  $ OLLAMA_HOST=127.0.0.1:11435 ollama pull mistral
-                </pre>
-              </span>
-            </li>
-          )}
-          {browserOnly && (
-            <li>
-              🏋️
-              <span className="ml-2">
-                These weights are several GB in size, so it may take some time.
-                Make sure you have a good internet connection!
-              </span>
-            </li>
-          )}
           <li>
-            🗺️
+            ⚙️
             <span className="ml-2">
-              The default embeddings are{" "}
-              <pre className="inline-flex px-2 py-1 my-2 rounded">
-                &quot;Xenova/all-MiniLM-L6-v2&quot;
-              </pre>
-              . For higher-quality embeddings on machines that can handle it,
-              switch to{" "}
-              <pre className="inline-flex px-2 py-1 my-2 rounded">
-                nomic-ai/nomic-embed-text-v1
-              </pre>{" "}
-              in{" "}
-              <pre className="inline-flex px-2 py-1 my-2 rounded">
-                app/worker.ts
-              </pre>
-              .
-            </span>
-          </li>
-          <li className="hidden text-l md:block">
-            🦜
-            <span className="ml-2">
-              <a target="_blank" href="https://js.langchain.com">
-                LangChain.js
+              The default LLM is Mistral-7B run locally by Ollama. You&apos;ll
+              need to install{" "}
+              <a target="_blank" href="https://ollama.ai">
+                the Ollama desktop app
               </a>{" "}
-              handles orchestration and ties everything together!
+              and run the following commands to give this site access to the
+              locally running model:
+              <br />
+              <pre className="inline-flex px-2 py-1 my-2 rounded">
+                $ OLLAMA_ORIGINS=https://webml-demo.vercel.app
+                OLLAMA_HOST=127.0.0.1:11435 ollama serve
+              </pre>
+              <br />
+              Then, in another window:
+              <br />
+              <pre className="inline-flex px-2 py-1 my-2 rounded">
+                $ OLLAMA_HOST=127.0.0.1:11435 ollama pull mistral
+              </pre>
+              <br />
+              Additionally, you will need a Firecrawl API key for website
+              embedding. Signing up at{" "}
+              <a target="_blank" href="https://firecrawl.dev">
+                firecrawl.dev
+              </a>{" "}
+              is easy and you get 500 credits free. Enter your API key into the
+              box below the URL in the embedding form.
             </span>
           </li>
+
           <li className="text-l">
             🐙
             <span className="ml-2">
-              This template is open source - you can see the source code and
-              deploy your own version{" "}
+              Both this template and Jacob Lee&apos;s template are open source -
+              you can see the source code and deploy your own version{" "}
               <a
                 href="https://github.com/ericciarla/local-web-chatbot"
                 target="_blank"
               >
                 from the GitHub repo
+              </a>
+              or Jacob&apos;s{" "}
+              <a href="https://github.com/jacoblee93/fully-local-pdf-chatbot">
+                original GitHub repo
               </a>
               !
             </span>
@@ -365,8 +286,7 @@ export function ChatWindow(props: { placeholder?: string }) {
             👇
             <span className="ml-2">
               Try embedding a website below, then asking questions! You can even
-              turn off your WiFi after website scrape
-              {browserOnly && " and the initial model download"}.
+              turn off your WiFi after the website is scraped.
             </span>
           </li>
         </ul>
