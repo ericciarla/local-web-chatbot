@@ -1,6 +1,6 @@
 # 🏠 Local Chat With Websites 🦙
 
-🏡 Welcome to the Local Web Chatbot! This is a direct fork of [Jacob Lee' fully local PDF chatbot](https://github.com/jacoblee93/fully-local-pdf-chatbot) replacing the chat with PDF functionality with website support. It is a simple chatbot that allows you to ask questions about a website by embedding it and running queries against the vector store using a local LLM and embeddings.
+🏡 Welcome to the Local Web Chatbot! This is a direct fork of [Jacob Lee' fully local PDF chatbot](https://github.com/jacoblee93/fully-local-pdf-chatbot) replacing the chat with PDF functionality with chat with website support powered by [Firecrawl](https://www.firecrawl.dev/). It is a simple chatbot that allows you to ask questions about a website by embedding it and running queries against the vector store using a local LLM and embeddings.
 
 ## Ollama
 
@@ -33,7 +33,7 @@ $ set OLLAMA_HOST=127.0.0.1:11435
 ollama pull mistral
 ```
 
-## Firecrawl
+## 🔥 Firecrawl
 
 Additionally, you will need a Firecrawl API key for website embedding. Signing up for [Firecrawl](https://www.firecrawl.dev/) is easy and you get 500 credits free. Enter your API key into the box below the URL in the embedding form.
 
