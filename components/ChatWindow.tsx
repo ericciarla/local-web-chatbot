@@ -20,7 +20,7 @@ export function ChatWindow(props: { placeholder?: string }) {
   const [readyToChat, setReadyToChat] = useState(false);
   const initProgressToastId = useRef<Id | null>(null);
   const titleText = "Local Chat With Websites";
-  const emoji = "🦙";
+  const emoji = "🔥";
 
   const worker = useRef<Worker | null>(null);
 
