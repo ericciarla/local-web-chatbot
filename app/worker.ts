@@ -7,6 +7,7 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
 
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
+import { FireCrawlLoader } from "@langchain/community/document_loaders/web/firecrawl";
 
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/hf_transformers";
 import { VoyVectorStore } from "@langchain/community/vectorstores/voy";
@@ -83,6 +84,31 @@ const _formatChatHistoryAsMessages = async (
       return new AIMessage(chatMessage.content);
     }
   });
+};
+
+const embedWebsite = async (url: string) => {
+ 
+  const webLoader = new FireCrawlLoader({
+    url: url, // The URL to scrape
+    apiKey: "fc-a03684d7a50f49038d4bc0fe7fc9ae8f", // Ensuring a string value; defaults to an empty string if null
+    mode: "scrape", // The mode to run the crawler in. Can be "scrape" for single urls or "crawl" for all accessible subpages
+  });
+  
+  const docs = await webLoader.load();
+
+  const splitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 500,
+    chunkOverlap: 50,
+  });
+
+  const splitDocs = await splitter.splitDocuments(docs);
+
+  self.postMessage({
+    type: "log",
+    data: splitDocs,
+  });
+
+  await vectorstore.addDocuments(splitDocs);
 };
 
 const queryVectorStore = async (
@@ -216,9 +242,35 @@ self.addEventListener("message", async (event: { data: any }) => {
     });
   }
 
-  if (event.data.pdf) {
+  if (event.data.url) {
     try {
+      self.postMessage({
+        type: "log",
+        data: `Embedding website now: ${event.data.url}`,
+      });
+      await embedWebsite(event.data.url);
+      self.postMessage({
+        type: "log",
+        data: `Embedded website: ${event.data.url} complete`,
+      });
+    } catch (e: any) {
+      self.postMessage({
+        type: "error",
+        error: e.message,
+      });
+      throw e;
+    }
+  } else if (event.data.pdf){
+    try {
+      self.postMessage({
+        type: "log",
+        data: `Embedding PDF now`,
+      });
       await embedPDF(event.data.pdf);
+      self.postMessage({
+        type: "log",
+        data: `Embedded PDF complete`,
+      });
     } catch (e: any) {
       self.postMessage({
         type: "error",
@@ -256,6 +308,7 @@ self.addEventListener("message", async (event: { data: any }) => {
       throw e;
     }
   }
+
 
   self.postMessage({
     type: "complete",
