@@ -176,6 +176,7 @@ export function ChatWindow(props: { placeholder?: string }) {
   async function embedWebsite(e: FormEvent<HTMLFormElement>) {
     console.log(e);
     console.log(selectedURL);
+    console.log(firecrawlApiKey);
     e.preventDefault();
     // const reader = new FileReader();
     if (selectedURL === null) {
@@ -185,7 +186,10 @@ export function ChatWindow(props: { placeholder?: string }) {
       return;
     }
     setIsLoading(true);
-    worker.current?.postMessage({ url: selectedURL });
+    worker.current?.postMessage({
+      url: selectedURL,
+      firecrawlApiKey: firecrawlApiKey,
+    });
     const onMessageReceived = (e: any) => {
       switch (e.data.type) {
         case "log":
@@ -237,9 +241,20 @@ export function ChatWindow(props: { placeholder?: string }) {
           <li className="text-l">
             🏡
             <span className="ml-2">
-              Yes, it&apos;s another LLM-powered chat over documents
-              implementation... but this one is entirely{" "}
-              {browserOnly ? "local in your browser" : "local"}!
+              Welcome to the Local Web Chatbot!
+              <br></br>
+              <br></br>
+              This is a direct fork of{" "}
+              <a href="https://github.com/jacoblee93/fully-local-pdf-chatbot">
+                Jacob Lee&apos;s fully local PDF chatbot
+              </a>
+              . It is a simple chatbot that allows you to ask questions about a
+              website by embedding it and running queries against the vector
+              store using a local LLM and embeddings.
+              <br></br>
+              <br></br>
+              This is a work in progress and is not yet ready for production
+              use.
             </span>
           </li>
           <li className="hidden text-l md:block">
@@ -359,14 +374,21 @@ export function ChatWindow(props: { placeholder?: string }) {
 
       <form
         onSubmit={embedWebsite}
-        className="mt-4 flex justify-between items-center w-full"
+        className="mt-4 flex flex-col justify-between items-center w-full"
       >
         <input
           id="url_input"
           type="text"
-          placeholder="Or enter a URL"
-          className="text-white"
+          placeholder="Enter a URL to scrape"
+          className="text-black mb-2"
           onChange={(e) => setSelectedURL(e.target.value)}
+        ></input>
+        <input
+          id="api_key_input"
+          type="text"
+          placeholder="Enter your Firecrawl API Key"
+          className="text-black mb-2"
+          onChange={(e) => setFirecrawlApiKey(e.target.value)}
         ></input>
         <button
           type="submit"

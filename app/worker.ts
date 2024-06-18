@@ -68,11 +68,11 @@ const _formatChatHistoryAsMessages = async (
   });
 };
 
-const embedWebsite = async (url: string) => {
+const embedWebsite = async (url: string, firecrawlApiKey: string) => {
  
   const webLoader = new FireCrawlLoader({
     url: url, // The URL to scrape
-    apiKey: "fc-a03684d7a50f49038d4bc0fe7fc9ae8f", // Ensuring a string value; defaults to an empty string if null
+    apiKey: firecrawlApiKey, // Ensuring a string value; defaults to an empty string if null
     mode: "scrape", // The mode to run the crawler in. Can be "scrape" for single urls or "crawl" for all accessible subpages
   });
   
@@ -228,9 +228,9 @@ self.addEventListener("message", async (event: { data: any }) => {
     try {
       self.postMessage({
         type: "log",
-        data: `Embedding website now: ${event.data.url}`,
+        data: `Embedding website now: ${event.data.url} with Firecrawl API Key: ${event.data.firecrawlApiKey}`,
       });
-      await embedWebsite(event.data.url);
+      await embedWebsite(event.data.url, event.data.firecrawlApiKey);
       self.postMessage({
         type: "log",
         data: `Embedded website: ${event.data.url} complete`,
