@@ -300,19 +300,19 @@ export function ChatWindow(props: { placeholder?: string }) {
           id="url_input"
           type="text"
           placeholder="Enter a URL to scrape"
-          className="text-black mb-2"
+          className="text-black mb-2 w-[300px] px-4 py-2 rounded-lg"
           onChange={(e) => setSelectedURL(e.target.value)}
         ></input>
         <input
           id="api_key_input"
           type="text"
           placeholder="Enter your Firecrawl API Key"
-          className="text-black mb-2"
+          className="text-black mb-2 w-[300px] px-4 py-2 rounded-lg"
           onChange={(e) => setFirecrawlApiKey(e.target.value)}
         ></input>
         <button
           type="submit"
-          className="shrink-0 px-8 py-4 bg-sky-600 rounded w-28"
+          className="shrink-0 px-4 py-4 bg-sky-600 rounded w-42"
         >
           <div
             role="status"
