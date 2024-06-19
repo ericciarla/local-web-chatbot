@@ -1,4 +1,4 @@
-# Local Chat With Websites
+# Local LLM Chat With Websites
 
 Welcome to the Local Web Chatbot! This is a direct fork of [Jacob Lee' fully local PDF chatbot](https://github.com/jacoblee93/fully-local-pdf-chatbot) replacing the chat with PDF functionality with chat with website support powered by [Firecrawl](https://www.firecrawl.dev/). It is a simple chatbot that allows you to ask questions about a website by embedding it and running queries against the vector store using a local LLM and embeddings.
 

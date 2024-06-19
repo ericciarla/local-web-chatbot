@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['*'],
+    },
+  },
   // (Optional) Export as a static site
   // See https://nextjs.org/docs/pages/building-your-application/deploying/static-exports#configuration
   output: 'export', // Feel free to modify/remove this option

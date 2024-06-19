@@ -17,9 +17,11 @@ export function ChatWindow(props: { placeholder?: string }) {
 
   const [selectedURL, setSelectedURL] = useState<string | null>(null);
   const [firecrawlApiKey, setFirecrawlApiKey] = useState("");
+  const [weaviateApiKey, setWeaviateApiKey] = useState("");
+  const [showWeaviateInput, setShowWeaviateInput] = useState(false);
   const [readyToChat, setReadyToChat] = useState(false);
   const initProgressToastId = useRef<Id | null>(null);
-  const titleText = "Local Chat With Websites";
+  const titleText = "Local LLM Chat With Websites";
   const emoji = "🔥";
 
   const worker = useRef<Worker | null>(null);
@@ -179,6 +181,7 @@ export function ChatWindow(props: { placeholder?: string }) {
     worker.current?.postMessage({
       url: selectedURL,
       firecrawlApiKey: firecrawlApiKey,
+      weaviateApiKey: weaviateApiKey,
     });
     const onMessageReceived = (e: any) => {
       switch (e.data.type) {
@@ -212,11 +215,11 @@ export function ChatWindow(props: { placeholder?: string }) {
   const chooseDataComponent = (
     <>
       <div className="p-4 md:p-8 rounded bg-[#25252d] w-full max-h-[85%] overflow-hidden flex flex-col">
-        <h1 className="text-3xl md:text-4xl mb-2 ml-auto mr-auto">
-          {emoji} Local Chat With Websites {emoji}
+        <h1 className="text-2xl md:text-3xl mb-2 ml-auto mr-auto">
+          {emoji} Local LLM Chat With Websites {emoji}
         </h1>
         <ul>
-          <li className="text-l">
+          <li className="text-sm">
             🏡
             <span className="ml-2">
               Welcome to the Local Web Chatbot!
@@ -232,7 +235,7 @@ export function ChatWindow(props: { placeholder?: string }) {
               store using a local LLM and embeddings.
             </span>
           </li>
-          <li>
+          <li className="text-sm">
             ⚙️
             <span className="ml-2">
               The default LLM is Mistral-7B run locally by Ollama. You&apos;ll
@@ -264,7 +267,7 @@ export function ChatWindow(props: { placeholder?: string }) {
             </span>
           </li>
 
-          <li className="text-l">
+          <li className="text-sm">
             🐙
             <span className="ml-2">
               Both this template and Jacob Lee&apos;s template are open source -
@@ -282,13 +285,6 @@ export function ChatWindow(props: { placeholder?: string }) {
               !
             </span>
           </li>
-          <li className="text-l">
-            👇
-            <span className="ml-2">
-              Try embedding a website below, then asking questions! You can even
-              turn off your WiFi after the website is scraped.
-            </span>
-          </li>
         </ul>
       </div>
 
@@ -302,14 +298,36 @@ export function ChatWindow(props: { placeholder?: string }) {
           placeholder="Enter a URL to scrape"
           className="text-black mb-2 w-[300px] px-4 py-2 rounded-lg"
           onChange={(e) => setSelectedURL(e.target.value)}
+          required
         ></input>
         <input
-          id="api_key_input"
+          id="firecrawl_api_key_input"
           type="text"
-          placeholder="Enter your Firecrawl API Key"
+          placeholder="Enter your Firecrawl API Key 🔥"
           className="text-black mb-2 w-[300px] px-4 py-2 rounded-lg"
           onChange={(e) => setFirecrawlApiKey(e.target.value)}
+          required
         ></input>
+        <div className="mb-2">
+          <label className="inline-flex items-center">
+            <input
+              type="checkbox"
+              className="form-checkbox"
+              checked={showWeaviateInput}
+              onChange={() => setShowWeaviateInput(!showWeaviateInput)}
+            />
+            <span className="ml-2">Use Weaviate Cloud Hybrid Search</span>
+          </label>
+        </div>
+        {showWeaviateInput && (
+          <input
+            id="weaviate_api_key_input"
+            type="text"
+            placeholder="Enter your Weaviate API Key"
+            className="text-black mb-2 w-[300px] px-4 py-2 rounded-lg"
+            onChange={(e) => setWeaviateApiKey(e.target.value)}
+          ></input>
+        )}
         <button
           type="submit"
           className="shrink-0 px-4 py-4 bg-sky-600 rounded w-42"

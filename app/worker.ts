@@ -1,3 +1,4 @@
+
 import { ChatWindowMessage } from "@/schema/ChatWindowMessage";
 
 import { Voy as VoyClient } from "voy-search";
@@ -10,6 +11,10 @@ import { FireCrawlLoader } from "@langchain/community/document_loaders/web/firec
 
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/hf_transformers";
 import { VoyVectorStore } from "@langchain/community/vectorstores/voy";
+import weaviate, { ApiKey } from "weaviate-ts-client";
+import { WeaviateStore } from "@langchain/weaviate";
+
+
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
@@ -35,7 +40,9 @@ const embeddings = new HuggingFaceTransformersEmbeddings({
 });
 
 const voyClient = new VoyClient();
-const vectorstore = new VoyVectorStore(voyClient, embeddings);
+
+let vectorstore: VoyVectorStore | WeaviateStore;
+
 
 const OLLAMA_RESPONSE_SYSTEM_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources. Using the provided context, answer the user's question to the best of your ability using the resources provided.
 Generate a concise answer for a given question based solely on the provided search results. You must only use information from the provided search results. Use an unbiased and journalistic tone. Combine search results together into a coherent answer. Do not repeat text.
@@ -59,7 +66,7 @@ const _formatChatHistoryAsMessages = async (
   });
 };
 
-const embedWebsite = async (url: string, firecrawlApiKey: string) => {
+const embedWebsite = async (url: string, firecrawlApiKey: string, weaviateApiKey: string) => {
  
   const webLoader = new FireCrawlLoader({
     url: url,
@@ -81,7 +88,23 @@ const embedWebsite = async (url: string, firecrawlApiKey: string) => {
     data: splitDocs,
   });
 
-  await vectorstore.addDocuments(splitDocs);
+  if (weaviateApiKey) {
+    console.log("Using Weaviate Cloud");
+    const weaviateClient = (weaviate as any).client({
+      apiKey: new ApiKey(weaviateApiKey),
+    });
+    const weaviateStore = new WeaviateStore(embeddings, {
+      client: weaviateClient,
+      indexName: "weaviate-index",
+    });
+    await weaviateStore.addDocuments(splitDocs);
+    vectorstore = weaviateStore;
+  } else {
+    console.log("Using Voy");
+    const voyStore = new VoyVectorStore(voyClient, embeddings);
+    await voyStore.addDocuments(splitDocs);
+    vectorstore = voyStore;
+  }
 };
 
 const queryVectorStore = async (
@@ -193,7 +216,7 @@ self.addEventListener("message", async (event: { data: any }) => {
         type: "log",
         data: `Embedding website now: ${event.data.url} with Firecrawl API Key: ${event.data.firecrawlApiKey}`,
       });
-      await embedWebsite(event.data.url, event.data.firecrawlApiKey);
+      await embedWebsite(event.data.url, event.data.firecrawlApiKey, event.data.weaviateApiKey);
       self.postMessage({
         type: "log",
         data: `Embedded website: ${event.data.url} complete`,
