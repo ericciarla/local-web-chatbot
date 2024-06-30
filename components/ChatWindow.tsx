@@ -37,7 +37,7 @@ export function ChatWindow(props: { placeholder?: string }) {
         const ollamaConfig = {
           baseUrl: "http://localhost:11435",
           temperature: 0.3,
-          model: "mistral",
+          model: "gemma2",
         };
         const payload: Record<string, any> = {
           messages,
@@ -235,8 +235,8 @@ export function ChatWindow(props: { placeholder?: string }) {
           <li>
             ⚙️
             <span className="ml-2">
-              The default LLM is Mistral-7B run locally by Ollama. You&apos;ll
-              need to install{" "}
+              The default LLM is Gemma 2 run locally by Ollama. You&apos;ll need
+              to install{" "}
               <a target="_blank" href="https://ollama.ai">
                 the Ollama desktop app
               </a>{" "}
@@ -251,7 +251,7 @@ export function ChatWindow(props: { placeholder?: string }) {
               Then, in another window:
               <br />
               <pre className="inline-flex px-2 py-1 my-2 rounded">
-                $ OLLAMA_HOST=127.0.0.1:11435 ollama pull mistral
+                $ OLLAMA_HOST=127.0.0.1:11435 ollama pull gemma2
               </pre>
               <br />
               Additionally, you will need a Firecrawl API key for website

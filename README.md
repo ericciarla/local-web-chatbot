@@ -4,7 +4,7 @@ Welcome to the Local Web Chatbot! This is a direct fork of [Jacob Lee' fully loc
 
 ## 🦙 Ollama
 
-You can run more powerful, general models outside the browser using [Ollama's desktop app](https://ollama.ai). Users will need to download and set up then run the following commands to allow the site access to a locally running Mistral instance:
+You can run more powerful, general models outside the browser using [Ollama's desktop app](https://ollama.ai). Users will need to download and set up then run the following commands to allow the site access to a locally running Gemma 2 instance:
 
 ### Mac/Linux
 
@@ -15,7 +15,7 @@ $ OLLAMA_ORIGINS=https://webml-demo.vercel.app OLLAMA_HOST=127.0.0.1:11435 ollam
 Then, in another terminal window:
 
 ```bash
-$ OLLAMA_HOST=127.0.0.1:11435 ollama pull mistral
+$ OLLAMA_HOST=127.0.0.1:11435 ollama pull gemma2
 ```
 
 ### Windows
@@ -30,7 +30,7 @@ Then, in another terminal window:
 
 ```cmd
 $ set OLLAMA_HOST=127.0.0.1:11435
-ollama pull mistral
+ollama pull gemma2
 ```
 
 ## 🔥 Firecrawl
